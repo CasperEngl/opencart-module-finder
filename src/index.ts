@@ -11,6 +11,7 @@ clear();
 console.log(
   chalk.yellow(
     figlet.textSync('Opencart\nModule\nFinder', {
+      font: 'Doom',
       horizontalLayout: 'full',
     }),
   ),
@@ -58,6 +59,7 @@ async function run() {
   console.log({
     username,
     password,
+    pinCode,
     moduleName,
   });
 }
