@@ -1,0 +1,33 @@
+{
+  "name": "opencart-find-module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Casper <me@casperengelmann.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/clear": "^0.1.0",
+    "@types/figlet": "^1.2.0",
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^12.7.2",
+    "@types/puppeteer": "^1.19.1",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.2.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "clear": "^0.1.0",
+    "clui": "^0.3.6",
+    "configstore": "^5.0.0",
+    "figlet": "^1.2.3",
+    "inquirer": "^6.5.1",
+    "minimist": "^1.2.0",
+    "puppeteer": "^1.19.0"
+  }
+}
