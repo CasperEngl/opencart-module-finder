@@ -1,5 +1,6 @@
 {
     "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
     "env": {
         "es6": true,
         "node": true
@@ -16,6 +17,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "import/prefer-default-export": 0
     },
     "settings": {
         "import/resolver": {
@@ -23,6 +25,6 @@
                 "paths": ["src"],
                 "extensions": [".js", ".jsx", ".ts", ".tsx"]
             }
-        },
+        }
     }
 }

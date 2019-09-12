@@ -10,9 +10,13 @@
   "devDependencies": {
     "@types/clear": "^0.1.0",
     "@types/figlet": "^1.2.0",
+    "@types/fs-extra": "^8.0.0",
     "@types/inquirer": "^6.5.0",
     "@types/node": "^12.7.2",
+    "@types/ora": "^3.2.0",
+    "@types/progress": "^2.0.3",
     "@types/puppeteer": "^1.19.1",
+    "@types/signale": "^1.2.1",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.0",
     "eslint-config-airbnb-base": "^14.0.0",
@@ -21,13 +25,19 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.2.0",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "clui": "^0.3.6",
     "configstore": "^5.0.0",
     "figlet": "^1.2.3",
+    "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
     "minimist": "^1.2.0",
-    "puppeteer": "^1.19.0"
+    "ora": "^3.4.0",
+    "progress": "^2.0.3",
+    "puppeteer": "^1.19.0",
+    "query-string": "^6.8.3",
+    "signale": "^1.4.0"
   }
 }
