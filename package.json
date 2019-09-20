@@ -1,11 +1,15 @@
 {
-  "name": "opencart-find-module",
+  "name": "opencart-find-module-cli",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "bin": {
+    "opencart-find-module": "./dist/index.js"
+  },
   "author": "Casper <me@casperengelmann.com>",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node ./src/index.ts"
+    "start": "ts-node ./src/index.ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/clear": "^0.1.0",
