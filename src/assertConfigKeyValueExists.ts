@@ -6,7 +6,7 @@ import { configPath } from './configPath';
 export function assertConfigKeyValueExists(config: Config, key: ConfigKey, name?: string) {
   try {
     if (config) {
-      if (config[key] === '') {
+      if (!config[key]) {
         throw new Error(`Update your ${name || key} in your config at ${configPath} and run the program again.`);
       }
     } else {
