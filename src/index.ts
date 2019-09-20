@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import path from 'path';
 import puppeteer from 'puppeteer';
 import fs from 'fs-extra';
@@ -7,7 +9,6 @@ import signale from 'signale';
 import * as inquirer from './inquirer';
 import { assertConfigKeyValueExists } from './assertConfigKeyValueExists';
 import { configPath } from './configPath';
-import { doTick } from './doTick';
 import { getLastPageNumber } from './getLastPageNumber';
 import { getPageNumber } from './getPageNumber';
 import { filterItemsFromPageObject } from './filterItemsFromPageObject';
@@ -17,34 +18,28 @@ import { wait } from './wait';
 import { Config } from './types/Config';
 import { Page } from './types/Page';
 
-const PAGES: Page[] = [];
-
-async function loopPagination(page: puppeteer.Page, progress: ProgressBar) {
+async function scanPage(page: puppeteer.Page) {
   try {
     const titles = await page.$$eval('#downloads-list h3', (titles) => titles.map((title) => title.textContent && title.textContent.toLowerCase()));
 
-    PAGES.push({
-      pageNumber: getPageNumber(page),
-      items: titles,
-    });
-
     await page.waitForSelector('ul.pagination li:last-of-type a', {
-      timeout: 5000,
+      timeout: 3000,
     });
 
     const lastButton = await page.$eval('ul.pagination li:last-of-type a', (link) => link.textContent);
 
-    if (lastButton == '>|') {
+    if (lastButton === '>|') {
       await page.click('ul.pagination li:nth-last-of-type(2) a');
-
-      await loopPagination(page, progress);
     }
 
-    doTick(progress);
-  } finally {
-    progress.update(1);
+    return {
+      pageNumber: getPageNumber(page),
+      items: titles,
+    };
+  } catch (e) {
+    // console.error(e);
 
-    return PAGES;
+    return false;
   }
 }
 
@@ -61,14 +56,24 @@ async function run() {
     if (exists) {
       const config: Config = JSON.parse((await fs.readFile(configPath)).toString());
 
-      assertConfigKeyValueExists(config, 'username');
-      assertConfigKeyValueExists(config, 'password');
-      assertConfigKeyValueExists(config, 'pinCode', 'pin code');
+      if (!config) {
+        return;
+      }
+
+      try {
+        assertConfigKeyValueExists(config, 'username');
+        assertConfigKeyValueExists(config, 'password');
+        assertConfigKeyValueExists(config, 'pinCode', 'pin code');
+      } catch (error) {
+        console.error(error.message);
+
+        return;
+      }
 
       const browserProgress = new ProgressBar('Starting scraper [:bar] :percent', {
         complete: '=',
         incomplete: ' ',
-        width: 20,
+        width: 30,
         total: 9,
       });
 
@@ -86,10 +91,11 @@ async function run() {
 
       browserProgress.tick();
 
-      await page.type('#input-email', 'opencart@designheroes.net');
+      await page.type('#input-email', config.username);
 
       browserProgress.tick();
-      await page.type('#input-password', 'DHNPass2015');
+
+      await page.type('#input-password', config.password);
 
       browserProgress.tick();
 
@@ -104,7 +110,7 @@ async function run() {
 
       await page.waitFor('#input-pin');
 
-      await page.type('#input-pin', '0365');
+      await page.type('#input-pin', config.pinCode);
 
       browserProgress.tick();
 
@@ -132,7 +138,7 @@ async function run() {
         fullPage: true,
       });
 
-      signale.info('Scraper successfully started! 🎉');
+      signale.success('Scraper started! 🎉');
 
       await wait(2000);
 
@@ -141,26 +147,54 @@ async function run() {
       const { moduleName }: any = await inquirer.askForModuleName();
 
       const lastPage: string = await page.$eval('ul.pagination li:last-of-type a', (link: any) => link.href);
-      const progress = new ProgressBar('Starting scraper [:bar] :percent', {
+
+      const pages: Page[] = [];
+
+      const paginationProgress = new ProgressBar(`Scanning ${getLastPageNumber(lastPage)} pages [:bar] :percent`, {
         complete: '=',
         incomplete: ' ',
-        width: 20,
+        width: 30,
         total: getLastPageNumber(lastPage),
       });
 
-      const items = await loopPagination(page, progress);
-      const matches = items
+      /* eslint-disable no-plusplus, no-await-in-loop */
+      for (let i = 1; i <= getLastPageNumber(lastPage); i++) {
+        try {
+          const scanned = await scanPage(page);
+
+          // signale.success(`Scanned page ${i}`);
+
+          if (scanned) {
+            pages.push(scanned);
+          }
+        } catch {
+          // signale.error(`Scanned page ${i}`);
+        } finally {
+          paginationProgress.update((1 / getLastPageNumber(lastPage)) * i);
+        }
+      }
+      /* eslint-enable no-plusplus, no-await-in-loop */
+
+      paginationProgress.terminate();
+
+      const matches = pages
         .filter((item) => filterItemsFromPageObject(item, moduleName).length)
         .map((item) => ({
           pageNumber: item.pageNumber,
           items: filterItemsFromPageObject(item, moduleName),
         }));
 
-      await fs.writeFile(path.join(__dirname, '../output/items.json'), JSON.stringify(items, null, 2));
+      await fs.writeFile(path.join(__dirname, '../output/items.json'), JSON.stringify(pages, null, 2));
       await fs.writeFile(path.join(__dirname, '../output/matches.json'), JSON.stringify(matches, null, 2));
 
       matches.forEach((match) => {
-        signale.info(`${moduleName} found on ${match.pageNumber}`);
+        signale.note(`${match.items.length} ${match.items.length === 1 ? 'item' : 'items'} found on page ${match.pageNumber}`);
+
+        match.items.forEach((item) => {
+          signale.log(`- ${item}`);
+        });
+
+        signale.log('');
       });
 
       await browser.close();
