@@ -43,7 +43,7 @@ async function scanPage(page: puppeteer.Page) {
   }
 }
 
-async function run() {
+(() => {
   showWelcome();
 
   const config: Config = {
@@ -65,7 +65,7 @@ async function run() {
         assertConfigKeyValueExists(config, 'password');
         assertConfigKeyValueExists(config, 'pinCode', 'pin code');
       } catch (error) {
-        console.error(error.message);
+        signale.error(error.message);
 
         return;
       }
@@ -79,6 +79,7 @@ async function run() {
 
       const browser = await puppeteer.launch({
         headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
 
       browserProgress.tick();
@@ -211,6 +212,4 @@ async function run() {
       throw new Error(`Update your config at ${configPath} and run the program again.`);
     }
   });
-}
-
-run();
+})();

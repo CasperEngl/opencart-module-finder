@@ -1,4 +1,5 @@
 import clear from 'clear';
+import signale from 'signale';
 
 import { Config, ConfigKey } from './types/Config';
 import { configPath } from './configPath';
@@ -14,7 +15,7 @@ export function assertConfigKeyValueExists(config: Config, key: ConfigKey, name?
     }
   } catch (error) {
     clear();
-    console.error(error.message);
+    signale.error(error.message);
     process.exit(9);
   }
 }
