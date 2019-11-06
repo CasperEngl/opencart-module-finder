@@ -18,7 +18,12 @@ import { wait } from './wait';
 import { Config } from './types/Config';
 import { Page } from './types/Page';
 
-async function scanPage(page: puppeteer.Page) {
+type ScannedPage = false | {
+  pageNumber: number;
+  items: (string | null)[];
+}
+
+async function scanPage(page: puppeteer.Page): Promise<ScannedPage> {
   try {
     const titles = await page.$$eval('#downloads-list h3', (titles) => titles.map((title) => title.textContent && title.textContent.toLowerCase()));
 
@@ -43,7 +48,7 @@ async function scanPage(page: puppeteer.Page) {
   }
 }
 
-(() => {
+((): void => {
   showWelcome();
 
   const config: Config = {
@@ -145,9 +150,9 @@ async function scanPage(page: puppeteer.Page) {
 
       showWelcome();
 
-      const { moduleName }: any = await inquirer.askForModuleName();
+      const { moduleName } = await inquirer.askForModuleName();
 
-      const lastPage: string = await page.$eval('ul.pagination li:last-of-type a', (link: any) => link.href);
+      const lastPage = await page.$eval('ul.pagination li:last-of-type a', (link) => link.getAttribute('href'));
 
       const pages: Page[] = [];
 

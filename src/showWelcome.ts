@@ -1,10 +1,12 @@
 import chalk from 'chalk';
 import clear from 'clear';
 import figlet from 'figlet';
+import signale from 'signale';
 
-export function showWelcome() {
+export function showWelcome(): void {
   clear();
-  console.log(chalk.yellow(figlet.textSync('Opencart\nModule\nFinder', {
+
+  signale.log(chalk.yellow(figlet.textSync('Opencart\nModule\nFinder', {
     font: 'Doom',
     horizontalLayout: 'full',
   })));

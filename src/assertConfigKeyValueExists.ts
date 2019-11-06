@@ -4,7 +4,7 @@ import signale from 'signale';
 import { Config, ConfigKey } from './types/Config';
 import { configPath } from './configPath';
 
-export function assertConfigKeyValueExists(config: Config, key: ConfigKey, name?: string) {
+export function assertConfigKeyValueExists(config: Config, key: ConfigKey, name?: string): void {
   try {
     if (config) {
       if (!config[key]) {
