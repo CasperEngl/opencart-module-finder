@@ -40,10 +40,24 @@ export const askForModuleName = (): Promise<ModuleName> => {
     {
       name: 'moduleName',
       type: 'input',
-      message: 'Module name:',
-      validate: (value: string): boolean | string => Boolean(value.length) || 'Please enter module name:',
+      message: 'Search query:',
+      validate: (value: string): boolean | string => Boolean(value.length) || 'Please enter a search query:',
     },
   ];
 
   return inquirer.prompt(questions);
+};
+
+type ConfigKey = {
+  answer: string;
+}
+
+export const askForConfigKey = (key: string, name?: string): Promise<ConfigKey> => {
+  const question = {
+    name: 'answer',
+    message: `${name || key}:`,
+    validate: (value: string): boolean | string => Boolean(value.length) || `Please enter your ${(name && name.toLowerCase()) || key.toLowerCase()}`,
+  };
+
+  return inquirer.prompt(question);
 };

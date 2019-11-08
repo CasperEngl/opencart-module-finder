@@ -1,21 +1,34 @@
-import clear from 'clear';
 import signale from 'signale';
+import Configstore from 'configstore';
 
-import { Config, ConfigKey } from './types/Config';
-import { configPath } from './configPath';
+import * as inquirer from './inquirer';
+import { validatePincode } from './validatePincode';
+import { validateUsername } from './validateUsername';
 
-export function assertConfigKeyValueExists(config: Config, key: ConfigKey, name?: string): void {
+import { Key } from './types/Key';
+import { showWelcome } from './showWelcome';
+
+export async function assertConfigKeyValueExists(
+  config: Configstore,
+  key: Key,
+  name?: string,
+): Promise<void> {
   try {
-    if (config) {
-      if (!config[key]) {
-        throw new Error(`Update your ${name || key} in your config at ${configPath} and run the program again.`);
-      }
-    } else {
-      throw new Error('Config does not exist');
+    if (!config.get(key)) {
+      throw new Error(key);
     }
   } catch (error) {
-    clear();
-    signale.error(error.message);
-    process.exit(9);
+    showWelcome();
+
+    signale.error(`${name || key} is missing from your config`);
+
+    const { answer } = await inquirer.askForConfigKey(key, name);
+
+    validateUsername(config, answer, key, name);
+    validatePincode(config, answer, key, name);
+
+    config.set(key, answer);
+
+    showWelcome();
   }
 }
