@@ -9,15 +9,19 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "devDependencies": {
+    "@babel/parser": "^7.7.7",
+    "@babel/types": "^7.7.4",
     "@types/change-case": "^2.3.1",
     "@types/clear": "^0.1.0",
     "@types/configstore": "^4.0.0",
     "@types/figlet": "^1.2.0",
     "@types/fs-extra": "^8.0.0",
     "@types/inquirer": "^6.5.0",
+    "@types/jest": "^24.0.25",
     "@types/node": "^12.7.2",
     "@types/ora": "^3.2.0",
     "@types/progress": "^2.0.3",
@@ -28,10 +32,13 @@
     "eslint": "^6.2.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "@casperengl/try-catch": "^1.4.1",
     "@typescript-eslint/eslint-plugin": "^2.2.0",
     "chalk": "^2.4.2",
     "change-case": "^3.1.0",
