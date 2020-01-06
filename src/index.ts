@@ -14,6 +14,8 @@ import { showWelcome } from './showWelcome';
 import { wait } from './wait';
 
 import { Page } from './types/Page';
+import { validateUsername } from './validateUsername';
+import { validatePincode } from './validatePincode';
 
 type ScannedPage = false | {
   pageNumber: number;
@@ -59,9 +61,26 @@ async function scanPage(page: puppeteer.Page): Promise<ScannedPage> {
     });
 
     try {
-      await assertConfigKeyValueExists(config, 'username', 'Username');
-      await assertConfigKeyValueExists(config, 'password', 'Password');
-      await assertConfigKeyValueExists(config, 'pinCode', 'Pincode');
+      try {
+        await assertConfigKeyValueExists(config, 'username', 'Username');
+        await assertConfigKeyValueExists(config, 'password', 'Password');
+        await assertConfigKeyValueExists(config, 'pinCode', 'Pincode');
+      } catch (error) {
+        showWelcome();
+
+        const [key, name] = error.message.split('|');
+
+        signale.error(`${name || key} is missing from your config`);
+
+        const { answer } = await inquirer.askForConfigKey(key, name);
+
+        validateUsername(config, answer, key, name);
+        validatePincode(config, answer, key, name);
+
+        config.set(key, answer);
+
+        showWelcome();
+      }
     } catch (error) {
       signale.error(error.message);
 
