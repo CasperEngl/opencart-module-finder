@@ -10,7 +10,9 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "npm run build",
+    "prepublishOnly": "npm test"
   },
   "devDependencies": {
     "@babel/parser": "^7.7.7",
